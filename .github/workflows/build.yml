@@ -1,34 +1,40 @@
-name: Build Safin Client
+name: build
 
 on:
   push:
-    branches: [ "main", "master" ]
   pull_request:
-    branches: [ "main", "master" ]
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout Repository
+      - name: checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: validate gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: setup jdk 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: setup gradle (cache)
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
 
-      - name: Upload Build Artifact
+      - name: build
+        run: ./gradlew build --stacktrace
+
+      - name: upload mod jar
         uses: actions/upload-artifact@v4
         with:
-          name: Safin-Client-Jars
-          path: build/libs/
-/libs/
+          name: safin-mod
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
+          if-no-files-found: error
