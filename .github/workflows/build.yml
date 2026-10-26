@@ -10,9 +10,8 @@ jobs:
           java-version: '25'
           distribution: 'microsoft'
       - run: |
-          unzip -q safin-1.21.11.zip -d proj
+          unzip -q safin-v2.zip -d proj
           cd proj
-          sed -i 's/>=0.20.1/>=0.19.0/' src/main/resources/fabric.mod.json
           chmod +x gradlew
           ./gradlew build
       - uses: actions/upload-artifact@v4
